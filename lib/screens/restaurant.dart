@@ -38,7 +38,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     )
                   : Row(
                       children: [
-                        for (int i = 0;
+                        for (int i = 1;
                             i < widget.restaurant.images.length;
                             i++)
                           Image.network(
