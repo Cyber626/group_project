@@ -17,17 +17,17 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("HomeScreen"),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.account_circle_outlined,
-              size: 35,
-            ),
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: const Icon(
+        //       Icons.account_circle_outlined,
+        //       size: 35,
+        //     ),
+        //   ),
+        // ],
       ),
-      drawer: const Drawer(),
+      // drawer: const Drawer(),
       body: ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: restaurants.length,
