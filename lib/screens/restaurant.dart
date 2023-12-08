@@ -31,14 +31,28 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
           children: [
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/images/no_image.png",
-                    height: 150,
-                  ),
-                ],
-              ),
+              child: widget.restaurant.images.isEmpty
+                  ? Image.asset(
+                      "assets/images/no_image.png",
+                      height: 150,
+                    )
+                  : Row(
+                      children: [
+                        for (int i = 0;
+                            i < widget.restaurant.images.length;
+                            i++)
+                          Image.network(
+                            widget.restaurant.images[i],
+                            height: 150,
+                            errorBuilder: (ctn, obj, stackTrace) {
+                              return Image.asset(
+                                "assets/images/no_image.png",
+                                height: 150,
+                              );
+                            },
+                          ),
+                      ],
+                    ),
             ),
             const SizedBox(height: 16),
             const Text(

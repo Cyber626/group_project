@@ -7,6 +7,12 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final noImage = Image.asset(
+      "assets/images/no_image.png",
+      height: 50,
+      width: 50,
+      fit: BoxFit.fill,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text("HomeScreen"),
@@ -32,10 +38,17 @@ class HomeScreen extends StatelessWidget {
               ),
             );
           },
-          leading: Image.asset(
-            "assets/images/no_image.png",
-            height: 50,
-          ),
+          leading: restaurants[index].images.isEmpty
+              ? noImage
+              : Image.network(
+                  restaurants[index].images[0],
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.fill,
+                  errorBuilder: (ctn, obj, stackTrace) {
+                    return noImage;
+                  },
+                ),
           title: Text(
             restaurants[index].name,
             style: Theme.of(context).textTheme.titleLarge,
