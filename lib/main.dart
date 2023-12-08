@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:group_project/screens/tabs.dart';
+import 'package:group_project/screens/login.dart';
 
 var kColorScheme = ColorScheme.fromSeed(
-  seedColor: const Color.fromARGB(255, 73, 75, 216),
+  seedColor: const Color.fromARGB(255, 8, 143, 78),
 );
 
 var kDarkColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
-  seedColor: const Color.fromARGB(255, 15, 4, 63),
+  seedColor: const Color.fromARGB(255, 1, 28, 15),
 );
 
 void main() {
@@ -21,7 +21,7 @@ void main() {
         darkTheme: ThemeData.dark().copyWith(
           colorScheme: kDarkColorScheme,
         ),
-        home: const TabsScreen(),
+        home: const LoginScreen(),
       ),
     ),
   );

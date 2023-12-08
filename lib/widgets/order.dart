@@ -197,13 +197,13 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
                   validator: (value) {
                     if (value == null ||
                         value.isEmpty ||
-                        value.trim().length < 13 ||
-                        !value.startsWith("+998")) {
+                        value.trim().length < 12 ||
+                        !value.startsWith("998")) {
                       return "Incorrect type";
                     }
                     return null;
                   },
-                  maxLength: 13,
+                  maxLength: 12,
                   keyboardType: const TextInputType.numberWithOptions(),
                   initialValue: "+998",
                 ),
