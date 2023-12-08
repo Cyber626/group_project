@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         isDense: true,
                         contentPadding:
-                            const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                            const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6.0),
                           borderSide: const BorderSide(
@@ -143,7 +143,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         _password = value!;
                       },
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 24),
+                    Text(
+                      _errorMessage,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -152,12 +159,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: _login,
                       child: const Text("Login"),
-                    ),
-                    Text(
-                      _errorMessage,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
                     ),
                   ],
                 ),
