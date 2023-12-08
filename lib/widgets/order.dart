@@ -168,11 +168,14 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
                     _numberOfGuests = int.parse(value!);
                   },
                   validator: (value) {
-                    if (value == null) {
-                      return "Input number of guests";
-                    } else if (int.tryParse(value) != null &&
-                        int.parse(value) < 1) {
-                      return "Minimum number of guests is 1";
+                    if (value == null || value.isEmpty) {
+                      return "Input";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Invalid";
+                    }
+                    if (int.parse(value) < 1) {
+                      return "Min.";
                     }
                     return null;
                   },

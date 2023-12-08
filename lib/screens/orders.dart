@@ -14,10 +14,17 @@ class OrdersScreen extends ConsumerWidget {
         title: const Text("Orders"),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: orders.length,
-        itemBuilder: (ctn, index) => OrderView(order: orders[index]),
-      ),
+      body: orders.isEmpty
+          ? const Center(
+              child: Text("No orders"),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: orders.length,
+              itemBuilder: (ctn, index) {
+                return OrderView(order: orders[index]);
+              },
+            ),
     );
   }
 }
