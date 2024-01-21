@@ -14,6 +14,7 @@ class OrderView extends StatelessWidget {
         );
 
     final localizations = MaterialLocalizations.of(context);
+    final TimeOfDay time = TimeOfDay.fromDateTime(order.date);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -60,7 +61,7 @@ class OrderView extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                localizations.formatTimeOfDay(order.time),
+                localizations.formatTimeOfDay(time),
                 style: textStyle,
               ),
             ],
@@ -75,6 +76,20 @@ class OrderView extends StatelessWidget {
               const Spacer(),
               Text(
                 "${order.numberOfGuests.toString()} guests",
+                style: textStyle,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text(
+                "Table number:",
+                style: textStyle,
+              ),
+              const Spacer(),
+              Text(
+                order.table == 0 ? "Any free table" : order.table.toString(),
                 style: textStyle,
               ),
             ],

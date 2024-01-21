@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:group_project/data/restaurants.dart';
+import 'package:group_project/data/users.dart';
+import 'package:group_project/screens/login.dart';
 import 'package:group_project/screens/restaurant.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,15 +19,22 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("HomeScreen"),
         centerTitle: true,
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {},
-        //     icon: const Icon(
-        //       Icons.account_circle_outlined,
-        //       size: 35,
-        //     ),
-        //   ),
-        // ],
+        actions: [
+          IconButton(
+            onPressed: () {
+              user = null;
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (ctn) => const LoginScreen(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.logout,
+              size: 35,
+            ),
+          ),
+        ],
       ),
       // drawer: const Drawer(),
       body: ListView.builder(

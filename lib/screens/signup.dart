@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:group_project/data/users.dart';
 import 'package:group_project/models/user.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -19,7 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _passwordRepeat = "";
   String _errorMessage = "";
 
-  void _signUp() {
+  void _signUp() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       if (_password != _passwordRepeat) {
@@ -27,12 +29,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _errorMessage = "Password mismatch";
         });
       } else {
-        users.add(
-          User(
-            phoneNumber: _phoneNumber,
-            password: _password,
+        final Uri url = Uri.https(
+            'group-order-restaurant-default-rtdb.firebaseio.com', 'users.json');
+
+        final getResponse = await http.get(url);
+        final List<User> users = [];
+        if (getResponse.statusCode == 200) {
+          final Map<String, dynamic> data = json.decode(getResponse.body);
+          for (final item in data.entries) {
+            users.add(
+              User(
+                id: item.key,
+                phoneNumber: item.value["phoneNumber"],
+                password: item.value["password"],
+              ),
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = "Connection failed ${getResponse.statusCode}";
+          });
+          return;
+        }
+
+        //Check whether this phone number registered
+        if (users
+            .where((element) => element.phoneNumber == _phoneNumber)
+            .isNotEmpty) {
+          setState(() {
+            _errorMessage = "User already registered";
+          });
+          return;
+        }
+
+        http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: json.encode(
+            {
+              'phoneNumber': _phoneNumber,
+              'password': _password,
+            },
           ),
         );
+
+        if (!context.mounted) {
+          return;
+        }
         Navigator.of(context).pop();
       }
     }
@@ -44,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(30),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,6 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     TextFormField(
                       maxLength: 12,
+                      initialValue: "998",
                       keyboardType: const TextInputType.numberWithOptions(),
                       decoration: InputDecoration(
                         labelText: "Phone number",

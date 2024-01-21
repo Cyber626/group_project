@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:group_project/data/users.dart';
+import 'package:group_project/models/user.dart';
 import 'package:group_project/screens/signup.dart';
 import 'package:group_project/screens/tabs.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,22 +22,45 @@ class _LoginScreenState extends State<LoginScreen> {
   String _password = "";
   String _errorMessage = "";
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      if (users
-          .where((element) =>
-              element.phoneNumber == _phoneNumber &&
-              element.password == _password)
-          .isNotEmpty) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (ctn) => const TabsScreen(),
-          ),
-        );
+      final Uri url = Uri.https(
+          'group-order-restaurant-default-rtdb.firebaseio.com', 'users.json');
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final users = [];
+        for (final item in data.entries) {
+          users.add(
+            User(
+              id: item.key,
+              phoneNumber: item.value["phoneNumber"],
+              password: item.value["password"],
+            ),
+          );
+        }
+        if (!context.mounted) {
+          return;
+        }
+        final User? tempUser = users.firstWhere((element) =>
+            element.phoneNumber == _phoneNumber &&
+            element.password == _password);
+        if (tempUser != null) {
+          user = tempUser;
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (ctn) => const TabsScreen(),
+            ),
+          );
+        } else {
+          setState(() {
+            _errorMessage = "User not found";
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = "User not found";
+          _errorMessage = "Connection failed! ${response.statusCode}";
         });
       }
     }
@@ -65,6 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextFormField(
                       maxLength: 12,
+                      initialValue: "998",
                       keyboardType: const TextInputType.numberWithOptions(),
                       decoration: InputDecoration(
                         labelText: "Phone number",

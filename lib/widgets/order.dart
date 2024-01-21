@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:group_project/models/order.dart';
+import 'package:group_project/data/users.dart';
 import 'package:group_project/models/restaurant.dart';
-import 'package:group_project/providers/order.dart';
+import 'package:group_project/providers/table.dart';
+import 'package:group_project/screens/select_table.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 final formatter = DateFormat.yMd();
 
@@ -25,7 +29,7 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   int _selectedBranch = 0;
-  int? _numberOfGuests;
+  int? _numberOfGuests, _selectedTable;
   String? _phoneNumber;
 
   final _formKey = GlobalKey<FormState>();
@@ -40,6 +44,18 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
     });
   }
 
+  void _selectTable() async {
+    int? returnValue = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctn) => const SelectTableScreen(),
+      ),
+    );
+    setState(() {
+      _selectedTable = returnValue;
+    });
+    ref.read(tableProvider.notifier).changeSelectedTable(null);
+  }
+
   void _presentTimePicker() async {
     const now = TimeOfDay(hour: 12, minute: 0);
     final pickedTime = await showTimePicker(context: context, initialTime: now);
@@ -48,19 +64,49 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
     });
   }
 
-  void _orderPlace() {
+  void _orderPlace() async {
     if (_formKey.currentState!.validate()) {
-      if (_selectedDate != null || _selectedTime != null) {
+      if (_selectedDate != null ||
+          _selectedTime != null ||
+          _selectedTable != null) {
         _formKey.currentState!.save();
-        ref.read(orderProvider.notifier).addOrder(
-              Order(
-                  restaurant: widget.restaurant.name,
-                  selectedBranch: _selectedBranch,
-                  numberOfGuests: _numberOfGuests!,
-                  phoneNumber: _phoneNumber!,
-                  date: _selectedDate!,
-                  time: _selectedTime!),
-            );
+
+        if (user == null) {
+          return;
+        } else {
+          //Combine DateTime and TimeOfDay
+          _selectedDate = DateTime(
+            _selectedDate!.year,
+            _selectedDate!.month,
+            _selectedDate!.day,
+            _selectedTime!.hour,
+            _selectedTime!.minute,
+          );
+
+          final Uri url = Uri.https(
+              'group-order-restaurant-default-rtdb.firebaseio.com',
+              'orders/${user!.id}.json');
+          http.post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(
+              {
+                'restaurant': widget.restaurant.name,
+                'selectedBranch': _selectedBranch,
+                'numberOfGuests': _numberOfGuests!,
+                'table': _selectedTable!,
+                'phoneNumber': _phoneNumber!,
+                'date': _selectedDate.toString(),
+              },
+            ),
+          );
+        }
+
+        if (!context.mounted) {
+          return;
+        }
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -187,6 +233,32 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
           const SizedBox(height: 6),
           Row(
             children: [
+              const Text("Table Number"),
+              const Spacer(),
+              Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        _selectedTable == null
+                            ? "No table selected"
+                            : _selectedTable == 0
+                                ? "Any place"
+                                : _selectedTable.toString(),
+                      ),
+                      IconButton(
+                        onPressed: _selectTable,
+                        icon: const Icon(Icons.table_bar),
+                      ),
+                    ],
+                  )),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
               const Text("Phone Number"),
               const Spacer(),
               Expanded(
@@ -205,7 +277,7 @@ class _OrderWidgetState extends ConsumerState<OrderWidget> {
                   },
                   maxLength: 12,
                   keyboardType: const TextInputType.numberWithOptions(),
-                  initialValue: "+998",
+                  initialValue: "998",
                 ),
               ),
             ],
