@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:group_project/data/restaurants.dart';
-import 'package:group_project/data/users.dart';
-import 'package:group_project/screens/login.dart';
+import 'package:group_project/screens/profile.dart';
 import 'package:group_project/screens/restaurant.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,24 +18,20 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("HomeScreen"),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              user = null;
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (ctn) => const LoginScreen(),
-                ),
-              );
-            },
-            icon: const Icon(
-              Icons.logout,
-              size: 35,
-            ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctn) => const ProfileScreen(),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.person,
+            size: 35,
           ),
-        ],
+        ),
       ),
-      // drawer: const Drawer(),
       body: ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: restaurants.length,

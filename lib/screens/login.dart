@@ -43,9 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!context.mounted) {
           return;
         }
-        final User? tempUser = users.firstWhere((element) =>
-            element.phoneNumber == _phoneNumber &&
-            element.password == _password);
+        final User? tempUser = users.firstWhere(
+            (element) =>
+                element.phoneNumber == _phoneNumber &&
+                element.password == _password,
+            orElse: () => null);
         if (tempUser != null) {
           user = tempUser;
           Navigator.of(context).pushReplacement(

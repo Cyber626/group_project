@@ -22,6 +22,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
     _getDataFromBackend();
   }
 
+  void _deleteOrder(String id) async {
+    for (final item in orders) {
+      if (item.id == id) {
+        setState(() {
+          orders.remove(item);
+        });
+        break;
+      }
+    }
+
+    final Uri url = Uri.https(
+        'group-order-restaurant-default-rtdb.firebaseio.com',
+        'orders/${user!.id}/$id.json');
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      _getDataFromBackend();
+    }
+  }
+
   void _getDataFromBackend() async {
     if (user == null) {
       return;
@@ -80,7 +100,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
               padding: const EdgeInsets.all(12),
               itemCount: orders.length,
               itemBuilder: (ctn, index) {
-                return OrderView(order: orders[index]);
+                return OrderView(
+                  order: orders[index],
+                  deleteOrder: _deleteOrder,
+                );
               },
             ),
     );
